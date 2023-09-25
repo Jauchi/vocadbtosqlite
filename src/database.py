@@ -115,6 +115,23 @@ def dbinit(dblocation):
         "name"	TEXT NOT NULL UNIQUE,
         PRIMARY KEY("id" AUTOINCREMENT)
     );
+    
+    CREATE UNIQUE INDEX IF NOT EXISTS "WEBLINKS_U_IDX" ON "WEBLINKS" (
+        "category",
+        "description",
+        "disabled",
+        "url"
+    );
+    
+    CREATE UNIQUE INDEX IF NOT EXISTS "WEBLINKS_U_ID" ON "WEBLINKS" (
+        "link_id"
+    );
+    
+    CREATE UNIQUE INDEX IF NOT EXISTS "TAG_ALT_IDX" ON "RELATED_TAGS" (
+        "a",
+        "b"
+    );
+
     COMMIT;
     ''')
     db.commit()
