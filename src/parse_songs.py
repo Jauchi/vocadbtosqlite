@@ -18,8 +18,10 @@ def sync_songs(db: sqlite3.Connection, song_list):
     # TODO: move song types to it's own table (saves DB storage)
     c = db.cursor()
     c.executemany('''
-    REPLACE INTO SONGS (id, lengthSeconds, nicoId, notes, notesEng, publishDate, songType, maxMilliBpm, minMilliBpm) VALUES
-    (:id, :lengthSeconds, :nicoId, :notes, :notesEng, :publishDate, :songType, :maxMilliBpm, :minMilliBpm)
+    INSERT INTO SONGS (id, lengthSeconds, nicoId, notes, notesEng, publishDate, songType, maxMilliBpm, minMilliBpm) 
+    VALUES
+    (:id, :lengthSeconds, :nicoId, :notes, :notesEng, :publishDate, :songType, :maxMilliBpm, :minMilliBpm) 
+    ON CONFLICT DO NOTHING
     ''', song_list)
     db.commit()
 
