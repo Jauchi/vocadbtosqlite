@@ -85,6 +85,31 @@ def dbinit(dblocation):
         FOREIGN KEY("tag_id") REFERENCES "TAGS"("id")
     );
     
+    CREATE TABLE IF NOT EXISTS "PVS" (
+        "author"	TEXT,
+        "disabled"	INTEGER,
+        "extendedMetadata"	TEXT,
+        "length"	INTEGER,
+        "name"	TEXT,
+        "publishDate"	TEXT,
+        "pvId"	TEXT NOT NULL,
+        "service"	TEXT NOT NULL,
+        "pvType"	TEXT,
+        "thumbUrl"	TEXT,
+        PRIMARY KEY("pvId","service"),
+        UNIQUE("pvId","service")
+    );
+    
+    CREATE TABLE IF NOT EXISTS "SONGS_PVS" (
+        "song_id"	INTEGER NOT NULL,
+        "pvId"	TEXT NOT NULL,
+        "service" TEXT NOT NULL,
+        UNIQUE("song_id", "pvId", "service"),
+        PRIMARY KEY("song_id", "pvId", "service"),
+        FOREIGN KEY("song_id") REFERENCES "SONGS"("id"),
+        FOREIGN KEY("pvId", "service") REFERENCES "PVS"("pvId", "service")
+    );
+    
     CREATE TABLE IF NOT EXISTS "TAG_CATEGORIES" (
         "id"	INTEGER NOT NULL,
         "name"	TEXT NOT NULL UNIQUE,

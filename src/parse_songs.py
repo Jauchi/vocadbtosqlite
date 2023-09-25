@@ -3,6 +3,7 @@ import sqlite3
 import src.util
 import src.parse_weblinks
 import src.parse_tags
+import src.pv
 import sys
 import json
 
@@ -33,8 +34,7 @@ def sync_songs(db: sqlite3.Connection, song_list):
                 reported_keys += [k]
         for t in s['tags']:
             src.parse_tags.link_song_id_to_tag(song_id=s.get('id'), tag_id=t.get('tag').get('id'), c=c)
-        print(s['pvs'])
-        sys.exit(1)
+        src.pv.add_pvs(song_id=s.get('id'), pv_list=s['pvs'], cursor=c)
     # ReleaseEvents are: {'id': 1300, 'nameHint': '猫村いろは誕生祭 2013'}
     # OriginalVersion is: {'id': 500092, 'nameHint': 'Hello, get to you.'}
     # TODO: lyrics is always empty -> why!?
