@@ -133,6 +133,7 @@ def dbinit(dblocation):
     );
 
     COMMIT;
+    PRAGMA foreign_keys = ON;
     ''')
     db.commit()
     return db
