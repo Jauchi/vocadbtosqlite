@@ -74,7 +74,7 @@ def dbinit(dblocation):
         "targets" INTEGER,
         "hidefromsuggestions"	INTEGER CHECK("hidefromsuggestions" IN (0, 1)),
         FOREIGN KEY("parent") REFERENCES "TAGS"("id"),
-        PRIMARY KEY("id","category")
+        PRIMARY KEY("id")
     );
     CREATE TABLE "SONGS_TAGS" (
         "song_id"	INTEGER NOT NULL,
