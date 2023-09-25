@@ -1,8 +1,5 @@
 import os.path
 
-if os.path.isfile('voca.db'):
-    os.remove('voca.db')
-
 import src.database
 import src.parse_tags
 import src.parse_songs
