@@ -15,13 +15,36 @@ def dbinit(dblocation):
         FOREIGN KEY("b") REFERENCES "TAGS"("id"),
         PRIMARY KEY("a","b")
     );
-    CREATE TABLE IF NOT EXISTS "TAG_WEBLINKS" (
-        "tag_id" INTEGER NOT NULL,
+    CREATE TABLE IF NOT EXISTS "WEBLINKS" (
+        "link_id"   INTEGER NOT NULL,
         "category"	TEXT NOT NULL,
         "description"	TEXT,
         "disabled"	INTEGER,
-        "url"	TEXT NOT NULL
+        "url"	TEXT NOT NULL,
+        UNIQUE("category", "description", "url"),
+        PRIMARY KEY("link_id")
     );
+    CREATE INDEX IF NOT EXISTS "WEBLINK_IDX"  ON "WEBLINKS" (
+    "category",
+    "description",
+    "disabled",
+    "url"
+    );
+    CREATE TABLE IF NOT EXISTS "SONGS_WEBLINKS" (
+        "song_id"	INTEGER NOT NULL,
+        "weblink_id"	INTEGER NOT NULL,
+        FOREIGN KEY("song_id") REFERENCES "SONGS"("id"),
+        FOREIGN KEY("weblink_id") REFERENCES "WEBLINKS"("link_id"),
+        UNIQUE("song_id","weblink_id")
+    );
+    CREATE TABLE IF NOT EXISTS "TAGS_WEBLINKS" (
+        "tag_id"	INTEGER NOT NULL,
+        "weblink_id"	INTEGER NOT NULL,
+        FOREIGN KEY("tag_id") REFERENCES "TAGS"("id"),
+        FOREIGN KEY("weblink_id") REFERENCES "WEBLINKS"("link_id"),
+        UNIQUE("tag_id","weblink_id")
+    );
+    
     CREATE TABLE IF NOT EXISTS "TAG_NAMES" (
         "tag_id"	INTEGER,
         "language"	INTEGER,
