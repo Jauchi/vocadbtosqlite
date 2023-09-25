@@ -3,6 +3,8 @@ import sqlite3
 import json
 import sys
 
+import src.parse_weblinks
+
 
 def parse_tagfile(location):
     c = None
@@ -15,11 +17,20 @@ def parse_tagfile(location):
 def sync_tags(db: sqlite3.Connection, tags: list):
     c = db.cursor()
     c.executemany(
-        'REPLACE INTO TAGS (id, '
+        'INSERT INTO TAGS (id, '
         'category, description, descriptioneng, parent, hidefromsuggestions, targets, thumbMime) '
-        'VALUES (:id, :categoryName, :description, :descriptionEng, :parent, :hidefromsuggestions, :targets, :thumbMime)',
+        'VALUES (:id, :categoryName, :description, :descriptionEng, :parent_id, :hideFromSuggestions, :targets, '
+        ':thumbMime) ON CONFLICT DO NOTHING',
         tags)
     db.commit()
+
+
+# TODO: multi
+def link_song_id_to_tag(song_id: int, tag_id: int, c: sqlite3.Cursor):
+    c.execute('INSERT INTO SONGS_TAGS (song_id, tag_id) VALUES (:song_id, :tag_id) ON CONFLICT DO NOTHING', {
+        'song_id': song_id,
+        'tag_id': tag_id
+    })
 
 
 def sync_tag_names(db: sqlite3.Connection, names: list):
@@ -34,19 +45,18 @@ def sync_related_tags(db: sqlite3.Connection, related_tags: list):
     db.commit()
 
 
-
-
 def sync_weblinks(db: sqlite3.Connection, tag_weblinks: list):
     c = db.cursor()
     c.executemany('REPLACE INTO TAG_WEBLINKS (tag_id, category, description, url, disabled) VALUES '
                   '(:tag_id, :category, :description, :url, :disabled)', tag_weblinks)
     db.commit()
 
+
 def parse_tag_dir(db: sqlite3.Connection, location):
+    c = db.cursor()
     tags_to_sync = []
     tag_names_to_sync = []
     related_tag_ids = []
-    tag_weblinks = []
     # TODO: this could be further optimized to store languages, categories etc. as references to distinct tables,
     #  which would save some storage space.
     for root, directory, files in os.walk(location):
@@ -54,16 +64,12 @@ def parse_tag_dir(db: sqlite3.Connection, location):
             fl = os.path.join(root, f)
             tags = parse_tagfile(fl)
             for tag in tags:
-                tag_to_add = {
-                    'id': tag.get('id'),
-                    'categoryName': tag.get('categoryName'),
-                    'description': tag.get('description', None),
-                    'descriptionEng': tag.get('descriptionEng', None),
-                    'hidefromsuggestions': tag.get('hideFromSuggestions'),
-                    'thumbMime': tag.get('thumbMime'),
-                    'targets': tag.get('targets'),
-                    'parent': None if tag['parent'] is None else tag['parent']['id']
-                }
+                if tag['parent'] is None:
+                    tag['parent_id'] = None
+                else:
+                    tag['parent_id'] = tag['parent']['id']
+                tags_to_sync += (tag,)
+
                 for tn in tag.get('names', []):
                     to_add = {
                         'tag_id': tag.get('id'),
@@ -77,24 +83,16 @@ def parse_tag_dir(db: sqlite3.Connection, location):
                 for rt in tag.get('relatedTags', []):
                     related_tag_ids += ({'a': tag.get('id'), 'b': rt.get('id')},)
 
-                for wl in tag.get('webLinks', []):
-                    link_to_add = {
-                        'tag_id': tag.get('id'),
-                        'category': wl.get('category'),
-                        'description': wl.get('description'),
-                        'url': wl.get('url'),
-                        'disabled': wl.get('disabled')
-                    }
-                    tag_weblinks += (link_to_add,)
+                src.parse_weblinks.link_tags_to_weblinks(tag_id=tag.get('id'), weblink_list=tag.get('webLinks', []),
+                                                         cursor=c)
                 # TODO: remove
-                handled_keys = ['id', 'categoryName', 'description', 'descriptionEng', 'parent', 'names',
-                                'hideFromSuggestions', 'relatedTags', 'webLinks', 'thumbMime', 'targets']
-                for key in tag.keys():
-                    if key not in handled_keys:
-                        print('unhandled key: ' + str(key) + ', value: ' + str(tag[key]))
+                # handled_keys = ['id', 'categoryName', 'description', 'descriptionEng', 'parent', 'names',
+                #                 'hideFromSuggestions', 'relatedTags', 'webLinks', 'thumbMime', 'targets']
+                # for key in tag.keys():
+                #     if key not in handled_keys:
+                #         print('unhandled key: ' + str(key) + ', value: ' + str(tag[key]))
 
-                tags_to_sync += (tag_to_add,)
     sync_tags(db, tags_to_sync)
     sync_tag_names(db, tag_names_to_sync)
     sync_related_tags(db, related_tag_ids)
-    sync_weblinks(db, tag_weblinks)
+
