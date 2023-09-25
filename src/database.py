@@ -76,7 +76,7 @@ def dbinit(dblocation):
         FOREIGN KEY("parent") REFERENCES "TAGS"("id"),
         PRIMARY KEY("id")
     );
-    CREATE TABLE "SONGS_TAGS" (
+    CREATE TABLE IF NOT EXISTS "SONGS_TAGS" (
         "song_id"	INTEGER NOT NULL,
         "tag_id"	INTEGER NOT NULL,
         UNIQUE("song_id","tag_id"),
