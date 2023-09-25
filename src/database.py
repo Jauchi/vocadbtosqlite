@@ -8,6 +8,18 @@ def dbinit(dblocation):
     db.row_factory = sqlite3.Row
     db.cursor().executescript('''
     BEGIN TRANSACTION;
+    CREATE TABLE IF NOT EXISTS "SONGS" (
+        "id"	INTEGER NOT NULL,
+        "lengthSeconds" INTEGER,
+        "nicoId"	TEXT,
+        "notes" TEXT,
+        "notesEng" TEXT,
+        "publishDate" TEXT,
+        "songType" TEXT,
+        "maxMilliBpm" INTEGER,
+        "minMilliBpm" INTEGER,
+        PRIMARY KEY("id" AUTOINCREMENT)
+    );
     CREATE TABLE IF NOT EXISTS "RELATED_TAGS" (
         "a"	INTEGER NOT NULL,
         "b"	INTEGER NOT NULL,
@@ -64,15 +76,19 @@ def dbinit(dblocation):
         FOREIGN KEY("parent") REFERENCES "TAGS"("id"),
         PRIMARY KEY("id","category")
     );
+    CREATE TABLE "SONGS_TAGS" (
+        "song_id"	INTEGER NOT NULL,
+        "tag_id"	INTEGER NOT NULL,
+        UNIQUE("song_id","tag_id"),
+        FOREIGN KEY("song_id") REFERENCES "SONGS"("id"),
+        PRIMARY KEY("tag_id","song_id"),
+        FOREIGN KEY("tag_id") REFERENCES "TAGS"("id")
+    );
+    
     CREATE TABLE IF NOT EXISTS "TAG_CATEGORIES" (
         "id"	INTEGER NOT NULL,
         "name"	TEXT NOT NULL UNIQUE,
         PRIMARY KEY("id" AUTOINCREMENT)
-    );
-    CREATE TABLE IF NOT EXISTS "LANGUAGES" (
-        "id"	INTEGER NOT NULL UNIQUE,
-        "language"	TEXT NOT NULL UNIQUE,
-        PRIMARY KEY("id")
     );
     COMMIT;
     ''')
