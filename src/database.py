@@ -18,7 +18,7 @@ def dbinit(dblocation):
         "songType" TEXT,
         "maxMilliBpm" INTEGER,
         "minMilliBpm" INTEGER,
-        PRIMARY KEY("id" AUTOINCREMENT)
+        PRIMARY KEY("id")
     );
     CREATE TABLE IF NOT EXISTS "RELATED_TAGS" (
         "a"	INTEGER NOT NULL,
