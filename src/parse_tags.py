@@ -71,45 +71,41 @@ def sync_weblinks(db: sqlite3.Connection, tag_weblinks: list):
 
 def parse_tag_dir(db: sqlite3.Connection, location):
     c = db.cursor()
-    tags_to_sync = []
-    tag_names_to_sync = []
-    related_tag_ids = []
     # TODO: this could be further optimized to store languages, categories etc. as references to distinct tables,
     #  which would save some storage space.
+
+    # This will read ALL information into memory and dump it later.
+    # Currently, this is the best way to deal with foreign key constraints.
+    # Pull-Requests welcome, of course!
+
+    tags_to_process = []
+    tag_names_to_process = []
+    related_tag_ids_to_process = []
+    tag_weblinks_to_process = []
     for root, directory, files in os.walk(location):
         for f in files:
             fl = os.path.join(root, f)
             tags = parse_tagfile(fl)
+
             for tag in tags:
-                if tag['parent'] is None:
-                    tag['parent_id'] = None
-                else:
-                    tag['parent_id'] = tag['parent']['id']
-                tags_to_sync += (tag,)
+                # parent is a dict, so we extract the ID for sqlite:
+                tag['parent_id'] = None if not tag['parent'] else tag['parent']['id']
+                tags_to_process += (tag,)
 
-                for tn in tag.get('names', []):
-                    to_add = {
-                        'tag_id': tag.get('id'),
-                        'language': tn.get('language', None),
-                        'value': tn.get('value', None),
-                        'translated': 0
-                    }
-                    tag_names_to_sync += (to_add,)
+                tag_names = tag.get('names', [])
+                for tn in tag_names:
+                    tn['tag_id'] = tag.get('id')
+                tag_names_to_process += tag_names
 
-                # TODO: make this unique
+                # TODO: this could be optimized by checking if the relationship is already stored in reverse in DB
                 for rt in tag.get('relatedTags', []):
-                    related_tag_ids += ({'a': tag.get('id'), 'b': rt.get('id')},)
+                    related_tag_ids_to_process += ({'a': tag.get('id'), 'b': rt.get('id')},)
 
-                src.parse_weblinks.link_tags_to_weblinks(tag_id=tag.get('id'), weblink_list=tag.get('webLinks', []),
-                                                         cursor=c)
-                # TODO: remove
-                # handled_keys = ['id', 'categoryName', 'description', 'descriptionEng', 'parent', 'names',
-                #                 'hideFromSuggestions', 'relatedTags', 'webLinks', 'thumbMime', 'targets']
-                # for key in tag.keys():
-                #     if key not in handled_keys:
-                #         print('unhandled key: ' + str(key) + ', value: ' + str(tag[key]))
+                for wl in tag.get('webLinks', []):
+                    wl['tag_id'] = tag.get('id')
+                    tag_weblinks_to_process += (wl,)
 
-    sync_tags(db, tags_to_sync)
-    sync_tag_names(db, tag_names_to_sync)
-    sync_related_tags(db, related_tag_ids)
-
+    sync_tags(db, tags_to_process)
+    sync_tag_names(db, tag_names_to_process)
+    sync_related_tags(db, related_tag_ids_to_process)
+    src.parse_weblinks.link_tags_to_weblinks(weblink_list=tag_weblinks_to_process, cursor=c)
