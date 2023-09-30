@@ -31,9 +31,9 @@ def dbinit(db_location: str):
     CREATE TABLE IF NOT EXISTS "RELATED_TAGS" (
         "a"	INTEGER NOT NULL,
         "b"	INTEGER NOT NULL,
-        FOREIGN KEY("a") REFERENCES "TAGS"("id"),
         FOREIGN KEY("b") REFERENCES "TAGS"("id"),
-        PRIMARY KEY("a","b")
+        PRIMARY KEY("a","b"),
+        FOREIGN KEY("a") REFERENCES "TAGS"("id")
     );
     CREATE TABLE IF NOT EXISTS "WEBLINKS" (
         "link_id"	INTEGER NOT NULL,
