@@ -101,20 +101,74 @@ def dbinit(db_location: str):
     );
     CREATE TABLE IF NOT EXISTS "SONGS_PVS" (
         "song_id"	INTEGER NOT NULL,
-        "pvId"	TEXT NOT NULL,
-        "service" TEXT NOT NULL,
-        UNIQUE("song_id", "pvId", "service"),
-        PRIMARY KEY("song_id", "pvId", "service"),
-        FOREIGN KEY("song_id") REFERENCES "SONGS"("id"),
-        FOREIGN KEY("pvId", "service") REFERENCES "PVS"("pvId", "service")
+        "pv_id"	TEXT NOT NULL,
+        "pv_service"	TEXT NOT NULL,
+        PRIMARY KEY("song_id","pv_id","pv_service"),
+        UNIQUE("song_id","pv_id","pv_service"),
+        FOREIGN KEY("pv_id","pv_service") REFERENCES "PVS"("pvId","service"),
+        FOREIGN KEY("song_id") REFERENCES "SONGS"("id")
     );
     CREATE TABLE IF NOT EXISTS "TAG_CATEGORIES" (
         "id"	INTEGER NOT NULL,
         "name"	TEXT NOT NULL UNIQUE,
         PRIMARY KEY("id" AUTOINCREMENT)
     );
-    
-    CREATE UNIQUE INDEX IF NOT EXISTS "WEBLINKS_U_IDX" ON "WEBLINKS" (
+    CREATE TABLE IF NOT EXISTS "ALBUM_TAGS" (
+        "album_id"	INTEGER NOT NULL,
+        "tag_id"	INTEGER NOT NULL,
+        FOREIGN KEY("tag_id") REFERENCES "TAGS"("id"),
+        FOREIGN KEY("album_id") REFERENCES "ALBUMS"("id"),
+        UNIQUE("album_id","tag_id"),
+        PRIMARY KEY("tag_id","album_id")
+    );
+    CREATE TABLE IF NOT EXISTS "NAMES" (
+        "name_id"	INTEGER NOT NULL UNIQUE,
+        "language"	INTEGER NOT NULL,
+        "value"	TEXT NOT NULL,
+        PRIMARY KEY("name_id")
+    );
+    CREATE TABLE IF NOT EXISTS "TAGS_NAMES" (
+        "tag_id"	INTEGER NOT NULL,
+        "name_id"	INTEGER NOT NULL,
+        FOREIGN KEY("name_id") REFERENCES "NAMES"("name_id"),
+        FOREIGN KEY("tag_id") REFERENCES "TAGS"("id"),
+        PRIMARY KEY("name_id","tag_id"),
+        UNIQUE("name_id","tag_id")
+    );
+    CREATE TABLE IF NOT EXISTS "ALBUMS_NAMES" (
+        "album_id"	INTEGER NOT NULL,
+        "name_id"	INTEGER NOT NULL,
+        FOREIGN KEY("name_id") REFERENCES "NAMES"("name_id"),
+        FOREIGN KEY("album_id") REFERENCES "ALBUMS"("id"),
+        PRIMARY KEY("album_id","name_id"),
+        UNIQUE("album_id","name_id")
+    );
+    CREATE TABLE IF NOT EXISTS "SONGS_NAMES" (
+        "song_id"	INTEGER NOT NULL,
+        "name_id"	INTEGER NOT NULL,
+        FOREIGN KEY("name_id") REFERENCES "NAMES"("name_id"),
+        UNIQUE("song_id","name_id"),
+        FOREIGN KEY("song_id") REFERENCES "SONGS"("id"),
+        PRIMARY KEY("name_id","song_id")
+    );
+    CREATE TABLE IF NOT EXISTS "ALBUMS_PVS" (
+        "album_id"	INTEGER NOT NULL,
+        "pv_id"	TEXT NOT NULL,
+        "pv_service"	TEXT NOT NULL,
+        FOREIGN KEY("pv_id","pv_service") REFERENCES "PVS"("pvId","service"),
+        PRIMARY KEY("album_id","pv_id","pv_service"),
+        FOREIGN KEY("album_id") REFERENCES "ALBUMS"("id")
+    );
+    CREATE TABLE IF NOT EXISTS "ALBUMS_SONGS" (
+        "album_id"	INTEGER NOT NULL,
+        "song_id"	INTEGER NOT NULL,
+        "discNumber"	INTEGER NOT NULL,
+        "trackNumber"	INTEGER NOT NULL,
+        PRIMARY KEY("album_id","song_id"),
+        FOREIGN KEY("song_id") REFERENCES "SONGS"("id"),
+        FOREIGN KEY("album_id") REFERENCES "ALBUMS"("id")
+    );
+    CREATE INDEX IF NOT EXISTS "WEBLINK_IDX" ON "WEBLINKS" (
         "category",
         "description",
         "disabled",
