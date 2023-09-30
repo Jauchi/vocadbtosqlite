@@ -81,6 +81,7 @@ def dbinit(db_location: str):
         "song_id"	INTEGER NOT NULL,
         "tag_id"	INTEGER NOT NULL,
         FOREIGN KEY("song_id") REFERENCES "SONGS"("id"),
+        UNIQUE("song_id","tag_id"),
         PRIMARY KEY("tag_id","song_id"),
         FOREIGN KEY("tag_id") REFERENCES "TAGS"("id")
     );
@@ -95,8 +96,8 @@ def dbinit(db_location: str):
         "service"	TEXT NOT NULL,
         "pvType"	TEXT,
         "thumbUrl"	TEXT,
-        PRIMARY KEY("pvId","service"),
-        UNIQUE("pvId","service")
+        UNIQUE("pvId","service"),
+        PRIMARY KEY("pvId","service")
     );
     CREATE TABLE IF NOT EXISTS "SONGS_PVS" (
         "song_id"	INTEGER NOT NULL,
