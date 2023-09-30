@@ -18,14 +18,14 @@ def dbinit(db_location: str):
     );
     CREATE TABLE IF NOT EXISTS "SONGS" (
         "id"	INTEGER NOT NULL,
-        "lengthSeconds" INTEGER,
+        "lengthSeconds"	INTEGER,
         "nicoId"	TEXT,
-        "notes" TEXT,
-        "notesEng" TEXT,
-        "publishDate" TEXT,
-        "songType" TEXT,
-        "maxMilliBpm" INTEGER,
-        "minMilliBpm" INTEGER,
+        "notes"	TEXT,
+        "notesEng"	TEXT,
+        "publishDate"	TEXT,
+        "songType"	TEXT,
+        "maxMilliBpm"	INTEGER,
+        "minMilliBpm"	INTEGER,
         PRIMARY KEY("id")
     );
     CREATE TABLE IF NOT EXISTS "RELATED_TAGS" (
@@ -36,7 +36,7 @@ def dbinit(db_location: str):
         PRIMARY KEY("a","b")
     );
     CREATE TABLE IF NOT EXISTS "WEBLINKS" (
-        "link_id"   INTEGER NOT NULL,
+        "link_id"	INTEGER NOT NULL,
         "category"	TEXT NOT NULL,
         "description"	TEXT,
         "disabled"	INTEGER,
@@ -64,7 +64,6 @@ def dbinit(db_location: str):
         FOREIGN KEY("weblink_id") REFERENCES "WEBLINKS"("link_id"),
         UNIQUE("tag_id","weblink_id")
     );
-    
     CREATE TABLE IF NOT EXISTS "TAG_NAMES" (
         "tag_id"	INTEGER,
         "language"	INTEGER,
@@ -78,8 +77,8 @@ def dbinit(db_location: str):
         "description"	TEXT,
         "descriptioneng"	TEXT,
         "parent"	INTEGER,
-        "thumbMime" TEXT,
-        "targets" INTEGER,
+        "thumbMime"	TEXT,
+        "targets"	INTEGER,
         "hidefromsuggestions"	INTEGER CHECK("hidefromsuggestions" IN (0, 1)),
         FOREIGN KEY("parent") REFERENCES "TAGS"("id"),
         PRIMARY KEY("id")
@@ -87,12 +86,10 @@ def dbinit(db_location: str):
     CREATE TABLE IF NOT EXISTS "SONGS_TAGS" (
         "song_id"	INTEGER NOT NULL,
         "tag_id"	INTEGER NOT NULL,
-        UNIQUE("song_id","tag_id"),
         FOREIGN KEY("song_id") REFERENCES "SONGS"("id"),
         PRIMARY KEY("tag_id","song_id"),
         FOREIGN KEY("tag_id") REFERENCES "TAGS"("id")
     );
-    
     CREATE TABLE IF NOT EXISTS "PVS" (
         "author"	TEXT,
         "disabled"	INTEGER,
@@ -107,7 +104,6 @@ def dbinit(db_location: str):
         PRIMARY KEY("pvId","service"),
         UNIQUE("pvId","service")
     );
-    
     CREATE TABLE IF NOT EXISTS "SONGS_PVS" (
         "song_id"	INTEGER NOT NULL,
         "pvId"	TEXT NOT NULL,
@@ -117,7 +113,6 @@ def dbinit(db_location: str):
         FOREIGN KEY("song_id") REFERENCES "SONGS"("id"),
         FOREIGN KEY("pvId", "service") REFERENCES "PVS"("pvId", "service")
     );
-    
     CREATE TABLE IF NOT EXISTS "TAG_CATEGORIES" (
         "id"	INTEGER NOT NULL,
         "name"	TEXT NOT NULL UNIQUE,
@@ -134,7 +129,6 @@ def dbinit(db_location: str):
     CREATE UNIQUE INDEX IF NOT EXISTS "WEBLINKS_U_ID" ON "WEBLINKS" (
         "link_id"
     );
-    
     CREATE UNIQUE INDEX IF NOT EXISTS "TAG_ALT_IDX" ON "RELATED_TAGS" (
         "a",
         "b"
