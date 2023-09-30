@@ -58,7 +58,8 @@ def sync_related_tags(db: sqlite3.Connection, related_tags: list):
         try:
             c.execute('INSERT INTO RELATED_TAGS (a,b) VALUES (:a, :b) ON CONFLICT DO NOTHING', t)
         except sqlite3.IntegrityError:
-            print('Skipping nonexistant tag relationship - A: ' + str(t['a']) + ' B: ' + str(t['b']))
+            # Skip deleted tags.
+            pass
     db.commit()
 
 
