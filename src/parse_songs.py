@@ -1,9 +1,10 @@
 import os.path
 import sqlite3
 import src.util
-import src.parse_weblinks
+import vocadbtosqlite.weblinks
+import vocadbtosqlite.tags
+import vocadbtosqlite.pvs
 import src.parse_tags
-import src.pv
 import sys
 import json
 
