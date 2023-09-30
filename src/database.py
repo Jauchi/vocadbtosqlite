@@ -41,14 +41,8 @@ def dbinit(db_location: str):
         "description"	TEXT,
         "disabled"	INTEGER,
         "url"	TEXT NOT NULL,
-        UNIQUE("category", "description", "url"),
-        PRIMARY KEY("link_id")
-    );
-    CREATE INDEX IF NOT EXISTS "WEBLINK_IDX"  ON "WEBLINKS" (
-    "category",
-    "description",
-    "disabled",
-    "url"
+        PRIMARY KEY("link_id"),
+        UNIQUE("category","description","url")
     );
     CREATE TABLE IF NOT EXISTS "SONGS_WEBLINKS" (
         "song_id"	INTEGER NOT NULL,
