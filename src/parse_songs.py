@@ -27,23 +27,35 @@ def sync_songs(db: sqlite3.Connection, song_list):
     ON CONFLICT DO NOTHING
     ''', song_list)
     db.commit()
+    c = db.cursor()
+
+    weblinks = []
+    pvs = []
 
     global known_keys
     global reported_keys
     for s in song_list:
-        src.parse_weblinks.link_song_to_weblinks(s.get('id'), s.get('webLinks'), db)
-        for k in s.keys():
-            if str(k) not in reported_keys:
-                print('unknown key encountered: ' + str(k))
-                print(str(type(s[k])))
-                reported_keys += [k]
+        song_id = s.get('id')
+        for wl in s.get('webLinks'):
+            wl['song_id'] = song_id
+        weblinks += s.get('webLinks')
+
         for t in s['tags']:
-            src.parse_tags.link_song_id_to_tag(song_id=s.get('id'), tag_id=t.get('tag').get('id'), c=c)
-        src.pv.add_pvs(song_id=s.get('id'), pv_list=s['pvs'], cursor=c)
+            try:
+                vocadbtosqlite.tags.link(song_id=s.get('id'), tag_id=t.get('tag').get('id'), cursor=c)
+            except sqlite3.IntegrityError:
+                pass
+        # Now we have all songs, extract the pvs:
+        for pv in s.get('pvs', []):
+            pv['song_id'] = song_id
+            pvs += (pv,)
     # ReleaseEvents are: {'id': 1300, 'nameHint': '猫村いろは誕生祭 2013'}
     # OriginalVersion is: {'id': 500092, 'nameHint': 'Hello, get to you.'}
     # TODO: lyrics is always empty -> why!?
-    # Now we have all songs, extract the pvs:
+    vocadbtosqlite.weblinks.link_to_weblinks(weblinks, c)
+    vocadbtosqlite.pvs.add_pvs(pvs, c)
+    vocadbtosqlite.pvs.link_songs(pvs, c)
+
     db.commit()
     print('commit.')
 
