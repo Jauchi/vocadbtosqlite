@@ -2,9 +2,9 @@
 
 import sqlite3
 
-
-def dbinit(dblocation):
-    db = sqlite3.connect(dblocation)
+# TODO: LANGUAGE needs it's own table
+def dbinit(db_location: str):
+    db = sqlite3.connect(db_location)
     db.row_factory = sqlite3.Row
     db.cursor().executescript('''
     BEGIN TRANSACTION;
