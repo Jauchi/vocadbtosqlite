@@ -174,7 +174,11 @@ def dbinit(db_location: str):
         "disabled",
         "url"
     );
-    
+    CREATE UNIQUE INDEX IF NOT EXISTS "WEBLINKS_U_IDX" ON "WEBLINKS" (
+        "category",
+        "description",
+        "url"
+    );
     CREATE UNIQUE INDEX IF NOT EXISTS "WEBLINKS_U_ID" ON "WEBLINKS" (
         "link_id"
     );
