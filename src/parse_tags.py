@@ -3,7 +3,7 @@ import sqlite3
 import json
 import sys
 
-import src.parse_weblinks
+import vocadbtosqlite.weblinks
 
 
 def parse_tagfile(location):
@@ -108,4 +108,4 @@ def parse_tag_dir(db: sqlite3.Connection, location):
     sync_tags(db, tags_to_process)
     sync_tag_names(db, tag_names_to_process)
     sync_related_tags(db, related_tag_ids_to_process)
-    src.parse_weblinks.link_tags_to_weblinks(weblink_list=tag_weblinks_to_process, cursor=c)
+    vocadbtosqlite.weblinks.link_to_weblinks(weblink_list=tag_weblinks_to_process, cursor=c)
