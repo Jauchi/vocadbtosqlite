@@ -32,18 +32,6 @@ def sync_tags(db: sqlite3.Connection, tags: list):
     db.commit()
 
 
-# TODO: batch processing
-def link_song_id_to_tag(song_id: int, tag_id: int, c: sqlite3.Cursor):
-    try:
-        c.execute('INSERT INTO SONGS_TAGS (song_id, tag_id) VALUES (:song_id, :tag_id) ON CONFLICT DO NOTHING', {
-            'song_id': song_id,
-            'tag_id': tag_id
-        })
-    except sqlite3.IntegrityError:
-        # Deleted tags do not show up in tags JSON, but still in Songs JSON.
-        pass
-
-
 def sync_tag_names(db: sqlite3.Connection, names: list):
     c = db.cursor()
     c.executemany('INSERT INTO TAG_NAMES (tag_id, language, value) VALUES (:tag_id, :language, :value) ON CONFLICT '
