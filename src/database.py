@@ -8,6 +8,14 @@ def dbinit(db_location: str):
     db.row_factory = sqlite3.Row
     db.cursor().executescript('''
     BEGIN TRANSACTION;
+    CREATE TABLE IF NOT EXISTS "ALBUMS" (
+        "id"	INTEGER NOT NULL,
+        "description"	TEXT,
+        "descriptionEng"	TEXT,
+        "discType"	TEXT,
+        "mainPictureMime"	TEXT,
+        PRIMARY KEY("id")
+    );
     CREATE TABLE IF NOT EXISTS "SONGS" (
         "id"	INTEGER NOT NULL,
         "lengthSeconds" INTEGER,
