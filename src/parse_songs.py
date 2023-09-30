@@ -17,6 +17,8 @@ reported_keys = known_keys
 def sync_songs(db: sqlite3.Connection, song_list):
     # TODO: convert timestamp to actual timestamp instead of str (saves DB storage)
     # TODO: move song types to it's own table (saves DB storage)
+    # TODO: Batch processing to improve performance
+    # TODO: Indices!!!
     c = db.cursor()
     c.executemany('''
     INSERT INTO SONGS (id, lengthSeconds, nicoId, notes, notesEng, publishDate, songType, maxMilliBpm, minMilliBpm) 
