@@ -47,9 +47,9 @@ def dbinit(db_location: str):
     CREATE TABLE IF NOT EXISTS "SONGS_WEBLINKS" (
         "song_id"	INTEGER NOT NULL,
         "weblink_id"	INTEGER NOT NULL,
+        UNIQUE("song_id","weblink_id"),
         FOREIGN KEY("song_id") REFERENCES "SONGS"("id"),
-        FOREIGN KEY("weblink_id") REFERENCES "WEBLINKS"("link_id"),
-        UNIQUE("song_id","weblink_id")
+        FOREIGN KEY("weblink_id") REFERENCES "WEBLINKS"("link_id")
     );
     CREATE TABLE IF NOT EXISTS "TAGS_WEBLINKS" (
         "tag_id"	INTEGER NOT NULL,
