@@ -186,8 +186,47 @@ def dbinit(db_location: str):
         "a",
         "b"
     );
-
+    CREATE UNIQUE INDEX IF NOT EXISTS "SONG_IDX" ON "SONGS" (
+        "id",
+        "lengthSeconds",
+        "nicoId",
+        "notes",
+        "notesEng",
+        "publishDate",
+        "songType",
+        "maxMilliBpm",
+        "minMilliBpm"
+    );
+    CREATE INDEX IF NOT EXISTS "ALBUM_NAMES_IDX" ON "ALBUMS_NAMES" (
+        "album_id"
+    );
+    CREATE INDEX IF NOT EXISTS "SONG_NAMES_IDX" ON "SONGS_NAMES" (
+        "song_id"
+    );
+    CREATE INDEX IF NOT EXISTS "NAME_IDX" ON "NAMES" (
+        "language",
+        "value"
+    );
+    CREATE UNIQUE INDEX IF NOT EXISTS "PV_U_IDX" ON "PVS" (
+        "pvId",
+        "service"
+    );
+    CREATE UNIQUE INDEX IF NOT EXISTS "ALBUM_PVS_IDX" ON "ALBUMS_PVS" (
+        "album_id",
+        "pv_id",
+        "pv_service"
+    );
+    CREATE UNIQUE INDEX IF NOT EXISTS "ALBUMS_PVS_U_IDX" ON "ALBUMS_PVS" (
+        "pv_id",
+        "pv_service"
+    );
+    CREATE UNIQUE INDEX IF NOT EXISTS "ALBUMS_SONGS_U_PK" ON "ALBUMS_SONGS" (
+        "album_id",
+        "song_id"
+    );
     COMMIT;
+
+
     PRAGMA foreign_keys = ON;
     ''')
     db.commit()
