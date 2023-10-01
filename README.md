@@ -2,9 +2,11 @@
 ## What does this do?
 Uses a dump obtained from VocaDB and turns it into an sqlite database. Dumps can be downloaded using the provided `download_dump.sh` script.
 ## Goals
-This project aims to provide a data source for analysis and scraping.
+* Provide an efficient data source for analysis and scraping.
+* Small file size.
 
-The database is much smaller than the extracted contents of the file, and can be zipped (and indices dropped) to achieve the smallest possible size.
+## Limitations
+Currently, the database represents a single dump *as is*. Updating using a different dump will result in an inconsistent database.
+If you wish to keep track of changes over time, you need a database for each point in time.
 
-It can also be used to provide a much more convenient access for data analysis purposes.
-
+Also, certain features (deleted tags, drafts) of VocaDB cannot be represented and are REMOVED from the database.
