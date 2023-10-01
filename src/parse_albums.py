@@ -3,6 +3,7 @@ import os
 import src.util
 import vocadbtosqlite.names
 import vocadbtosqlite.pvs
+import vocadbtosqlite.tags
 import sys
 import src.pv
 
@@ -23,11 +24,15 @@ def add_albums(albums: list, cursor: sqlite3.Cursor):
     names_to_add = []
     pvs = []
     albums_songs = []
+    albums_tags = []
     for a in albums:
         a_id = a.get('id')
         for name in a.get('names'):
             name['album_id'] = a_id
         names_to_add += a['names']
+
+        for t in a.get('tags'):
+            albums_tags += ({'album_id': a_id, 'tag_id': t['tag'].get('id')},)
 
         for pv in a.get('pvs'):
             pv['album_id'] = a_id
@@ -48,6 +53,8 @@ def add_albums(albums: list, cursor: sqlite3.Cursor):
 
     vocadbtosqlite.pvs.add_pvs(pvs, cursor)
     vocadbtosqlite.pvs.link_albums(pvs, cursor)
+
+    vocadbtosqlite.tags.link_albums(albums_tags, cursor)
 
     link_albums_songs(albums_songs, cursor)
 

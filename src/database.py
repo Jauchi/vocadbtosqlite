@@ -166,8 +166,14 @@ def dbinit(db_location: str):
         "trackNumber"	INTEGER NOT NULL,
         FOREIGN KEY("album_id") REFERENCES "ALBUMS"("id"),
         PRIMARY KEY("album_id","song_id"),
-        FOREIGN KEY("song_id") REFERENCES "SONGS"("id"),
-        FOREIGN KEY("album_id") REFERENCES "ALBUMS"("id")
+        FOREIGN KEY("song_id") REFERENCES "SONGS"("id")
+    );
+    CREATE TABLE IF NOT EXISTS "ALBUMS_TAGS" (
+        "album_id"	INTEGER NOT NULL,
+        "tag_id"	INTEGER NOT NULL,
+        FOREIGN KEY("album_id") REFERENCES "ALBUMS"("id"),
+        FOREIGN KEY("tag_id") REFERENCES "TAGS"("id"),
+        PRIMARY KEY("album_id","tag_id")
     );
     CREATE INDEX IF NOT EXISTS "WEBLINK_IDX" ON "WEBLINKS" (
         "category",
@@ -224,6 +230,10 @@ def dbinit(db_location: str):
     CREATE UNIQUE INDEX IF NOT EXISTS "ALBUMS_SONGS_U_PK" ON "ALBUMS_SONGS" (
         "album_id",
         "song_id"
+    );
+    CREATE INDEX IF NOT EXISTS "ALBUMS_TAGS_U_IDX" ON "ALBUMS_TAGS" (
+        "album_id",
+        "tag_id"
     );
     COMMIT;
 
