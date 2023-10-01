@@ -11,6 +11,15 @@ def __add_wls(wl_list: [dict], c: sqlite3.Cursor):
                   "(:category, :description, :disabled, :url) ON CONFLICT DO NOTHING", wl_list)
 
 
+def add_artist_weblinks(wl_list: [dict], c: sqlite3.Cursor):
+    __add_wls(wl_list, c)
+    c.executemany('INSERT INTO ARTISTS_WEBLINKS VALUES (:artist_id, (SELECT link_id FROM WEBLINKS WHERE '
+                  'WEBLINKS.category = :category AND '
+                  'WEBLINKS.description = :description AND '
+                  'WEBLINKS.url = :url)) ON CONFLICT DO NOTHING',
+                  wl_list)
+
+
 # Will add weblinks
 # Additionally lets you specify song_id, tag_id, album_id as a dictionary key.
 # These will then be linked.

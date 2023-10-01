@@ -175,6 +175,46 @@ def dbinit(db_location: str):
         FOREIGN KEY("tag_id") REFERENCES "TAGS"("id"),
         PRIMARY KEY("album_id","tag_id")
     );
+    CREATE TABLE IF NOT EXISTS "ARTISTS_NAMES" (
+        "artist_id"	INTEGER NOT NULL,
+        "name_id"	INTEGER NOT NULL,
+        FOREIGN KEY("artist_id") REFERENCES "ARTISTS"("artist_id"),
+        FOREIGN KEY("name_id") REFERENCES "NAMES"("name_id")
+    );
+    CREATE TABLE IF NOT EXISTS "ARTISTS_TAGS" (
+        "artist_id"	INTEGER NOT NULL,
+        "tag_id"	INTEGER NOT NULL,
+        PRIMARY KEY("tag_id","artist_id"),
+        FOREIGN KEY("artist_id") REFERENCES "ARTISTS"("artist_id"),
+        FOREIGN KEY("tag_id") REFERENCES "TAGS"("id")
+    );
+    CREATE TABLE IF NOT EXISTS "ARTISTS_MEMBERS" (
+        "parent_artist"	INTEGER NOT NULL,
+        "child_artist"	INTEGER NOT NULL,
+        PRIMARY KEY("parent_artist","child_artist"),
+        UNIQUE("parent_artist","child_artist"),
+        FOREIGN KEY("child_artist") REFERENCES "ARTISTS"("artist_id"),
+        FOREIGN KEY("parent_artist") REFERENCES "ARTISTS"("artist_id")
+    );
+    CREATE TABLE IF NOT EXISTS "ARTISTS" (
+        "artistType"	TEXT,
+        "baseVoiceBank"	INTEGER,
+        "description"	TEXT,
+        "descriptionEng"	TEXT,
+        "artist_id"	INTEGER NOT NULL UNIQUE,
+        "mainPictureMime"	TEXT,
+        "releaseDate"	TEXT,
+        PRIMARY KEY("artist_id"),
+        FOREIGN KEY("baseVoiceBank") REFERENCES "ARTISTS"("artist_id")
+    );
+    CREATE TABLE IF NOT EXISTS "ARTISTS_WEBLINKS" (
+        "artist_id"	INTEGER NOT NULL,
+        "weblink_id"	INTEGER NOT NULL,
+        PRIMARY KEY("weblink_id","artist_id"),
+        UNIQUE("artist_id","weblink_id"),
+        FOREIGN KEY("weblink_id") REFERENCES "WEBLINKS"("link_id"),
+        FOREIGN KEY("artist_id") REFERENCES "ARTISTS"("artist_id")
+    );
     CREATE INDEX IF NOT EXISTS "WEBLINK_IDX" ON "WEBLINKS" (
         "category",
         "description",
@@ -234,6 +274,21 @@ def dbinit(db_location: str):
     CREATE INDEX IF NOT EXISTS "ALBUMS_TAGS_U_IDX" ON "ALBUMS_TAGS" (
         "album_id",
         "tag_id"
+    );
+    CREATE UNIQUE INDEX IF NOT EXISTS "ARTISTS_TAGS_U_IDX" ON "ARTISTS_TAGS" (
+        "artist_id",
+        "tag_id"
+    );
+    CREATE UNIQUE INDEX IF NOT EXISTS "ARTISTS_NAMES_U_IDX" ON "ARTISTS_NAMES" (
+        "artist_id",
+        "name_id"
+    );
+    CREATE UNIQUE INDEX IF NOT EXISTS "ARTISTS_U_IDX" ON "ARTISTS" (
+        "artist_id"
+    );
+    CREATE UNIQUE INDEX IF NOT EXISTS "ARTISTS_WEBLINKS_U_IDX" ON "ARTISTS_WEBLINKS" (
+        "artist_id",
+        "weblink_id"
     );
     COMMIT;
 
