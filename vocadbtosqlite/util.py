@@ -1,5 +1,6 @@
 import json
 
+
 def parse_json(location):
     c = None
     with open(location, 'r') as fd:

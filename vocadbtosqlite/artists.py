@@ -46,7 +46,7 @@ def add_artists(artist_lst: list, cursor: sqlite3.Cursor):
                 artist_members += [(child['id'], a_id)]
         if a.get('groups'):
             for parent in a.get('groups'):
-                artist_members += [(a_id, parent['id'], )]
+                artist_members += [(a_id, parent['id'],)]
         if a.get('webLinks'):
             for wl in a.get('webLinks'):
                 wl['artist_id'] = a_id
