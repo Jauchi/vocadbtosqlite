@@ -17,6 +17,15 @@ def parse_artist_dir(db: sqlite3.Connection, location):
             db.commit()
 
 
+def link_albums_artists(entries: [dict], c: sqlite3.Cursor):
+    c.executemany('''
+                INSERT INTO ALBUMS_ARTISTS (album_id, artist_id, is_support, roles)
+                VALUES
+                (:album_id, :id, :isSupport, :roles)
+                ON CONFLICT DO NOTHING
+            ''', entries)
+
+
 def add_artists(artist_lst: list, cursor: sqlite3.Cursor):
     # TODO LATER: add artistType table (dedup)
     # TODO LATER: implement this strategy for the other data type (cannot remember rn)

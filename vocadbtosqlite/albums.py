@@ -4,6 +4,7 @@ import vocadbtosqlite.util
 import vocadbtosqlite.names
 import vocadbtosqlite.pvs
 import vocadbtosqlite.tags
+import vocadbtosqlite.artists
 
 
 def link_albums_songs(to_add: list, cursor: sqlite3.Cursor):
@@ -23,6 +24,8 @@ def add_albums(albums: list, cursor: sqlite3.Cursor):
     pvs = []
     albums_songs = []
     albums_tags = []
+    artists = []
+
     for a in albums:
         a_id = a.get('id')
         for name in a.get('names'):
@@ -35,6 +38,11 @@ def add_albums(albums: list, cursor: sqlite3.Cursor):
         for pv in a.get('pvs'):
             pv['album_id'] = a_id
             pvs += (pv,)
+
+        for artist in a.get('artists', []):
+            if artist.get('id') != 0:
+                artist['album_id'] = a_id
+                artists += (artist,)
 
         for s in a.get('songs', []):
             s_id = s.get('id')
@@ -56,8 +64,9 @@ def add_albums(albums: list, cursor: sqlite3.Cursor):
 
     link_albums_songs(albums_songs, cursor)
 
+    vocadbtosqlite.artists.link_albums_artists(artists, cursor)
 
-# , 'artists': [{'isSupport': False, 'roles': 0, 'id': 14, 'nameHint': '鏡音リン'}, {'isSupport': False, 'roles': 0, 'id': 1, 'nameHint': '初音ミク'}, {'isSupport': False, 'roles': 0, 'id': 292, 'nameHint': '椎名もた'}, {'isSupport': True, 'roles': 0, 'id': 314, 'nameHint': '黒魔'}, {'isSupport': True, 'roles': 0, 'id': 2219, 'nameHint': 'とんかつ'}, {'isSupport': True, 'roles': 0, 'id': 2220, 'nameHint': '削除'}, {'isSupport': False, 'roles': 0, 'id': 11480, 'nameHint': 'meisa'}, {'isSupport': True, 'roles': 512, 'id': 2010, 'nameHint': '抱きしめたトゥナイト'}, {'isSupport': False, 'roles': 256, 'id': 0, 'nameHint': 'PONKATSU'}, {'isSupport': True, 'roles': 0, 'id': 10124, 'nameHint': '000'}, {'isSupport': True, 'roles': 0, 'id': 13553, 'nameHint': '古川本舗'}, {'isSupport': False, 'roles': 0, 'id': 78, 'nameHint': '初音ミク Append (Soft)'}, {'isSupport': False, 'roles': 0, 'id': 79, 'nameHint': '初音ミク Append (Sweet)'}],
+
 # 'identifiers': [],
 # 'originalRelease': {'catNum': 'SNMT-0005',
 # 'releaseDate': {'day': 5, 'isEmpty': False, 'month': 2, 'year': 2012},
