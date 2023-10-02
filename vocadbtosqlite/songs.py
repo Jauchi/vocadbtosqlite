@@ -1,12 +1,11 @@
+import datetime
 import os.path
 import sqlite3
-import src.util
+import vocadbtosqlite.util
 import vocadbtosqlite.weblinks
 import vocadbtosqlite.tags
 import vocadbtosqlite.pvs
-import src.parse_tags
-import sys
-import json
+import vocadbtosqlite.tags
 
 known_keys = ['id', 'lengthSeconds', 'nicoId', 'notes', 'notesEng', 'publishDate', 'songType', 'maxMilliBpm',
               'minMilliBpm', 'webLinks']
@@ -57,7 +56,6 @@ def sync_songs(db: sqlite3.Connection, song_list):
     vocadbtosqlite.pvs.link_songs(pvs, c)
 
     db.commit()
-    print('commit.')
 
 
 def parse_song_dir(db: sqlite3.Connection, location):
@@ -66,5 +64,10 @@ def parse_song_dir(db: sqlite3.Connection, location):
         for f in files:
             fl = os.path.join(root, f)
             # print('Processing: ' + str(fl))
-            songs = src.util.parse_json(fl)
+            t_start = datetime.datetime.now()
+            songs = vocadbtosqlite.util.parse_json(fl)
+            duration_parse = datetime.datetime.now() - t_start
+            print(str('Parsing took ' + str(duration_parse)))
             sync_songs(db, songs)
+            duration = datetime.datetime.now() - t_start
+            print(str('Syncing to db took ' + str(duration-duration_parse)))

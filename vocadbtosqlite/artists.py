@@ -1,6 +1,20 @@
 import sqlite3
-
 import vocadbtosqlite.weblinks
+import sqlite3
+import os
+import vocadbtosqlite.util
+
+
+# TODO: make this prettier
+def parse_artist_dir(db: sqlite3.Connection, location):
+    i = 0
+    for root, directory, files in os.walk(location):
+        for f in files:
+            fl = os.path.join(root, f)
+            # print('Processing: ' + str(fl))
+            artists = vocadbtosqlite.util.parse_json(fl)
+            add_artists(artists, cursor=db.cursor())
+            db.commit()
 
 
 def add_artists(artist_lst: list, cursor: sqlite3.Cursor):

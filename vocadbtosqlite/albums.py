@@ -1,11 +1,9 @@
 import sqlite3
 import os
-import src.util
+import vocadbtosqlite.util
 import vocadbtosqlite.names
 import vocadbtosqlite.pvs
 import vocadbtosqlite.tags
-import sys
-import src.pv
 
 
 def link_albums_songs(to_add: list, cursor: sqlite3.Cursor):
@@ -73,7 +71,7 @@ def parse_album_dir(db: sqlite3.Connection, location):
         for f in files:
             fl = os.path.join(root, f)
             # print('Processing: ' + str(fl))
-            albums = src.util.parse_json(fl)
+            albums = vocadbtosqlite.util.parse_json(fl)
             all_albums += albums
 
     add_albums(albums=all_albums, cursor=c)
