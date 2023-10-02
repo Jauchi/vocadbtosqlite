@@ -210,9 +210,19 @@ def db_init(db_location: str):
     CREATE TABLE IF NOT EXISTS "ARTISTS_WEBLINKS" (
         "artist_id"	INTEGER NOT NULL,
         "weblink_id"	INTEGER NOT NULL,
+        FOREIGN KEY("weblink_id") REFERENCES "WEBLINKS"("link_id"),
         PRIMARY KEY("weblink_id","artist_id"),
         UNIQUE("artist_id","weblink_id"),
-        FOREIGN KEY("weblink_id") REFERENCES "WEBLINKS"("link_id"),
+        FOREIGN KEY("artist_id") REFERENCES "ARTISTS"("artist_id")
+    );
+    CREATE TABLE IF NOT EXISTS "ALBUMS_ARTISTS" (
+        "album_id"	INTEGER NOT NULL,
+        "artist_id"	INTEGER NOT NULL,
+        "is_support"	INTEGER,
+        "roles"	INTEGER,
+        PRIMARY KEY("artist_id","album_id"),
+        UNIQUE("album_id","artist_id"),
+        FOREIGN KEY("album_id") REFERENCES "ALBUMS"("id"),
         FOREIGN KEY("artist_id") REFERENCES "ARTISTS"("artist_id")
     );
     CREATE INDEX IF NOT EXISTS "WEBLINK_IDX" ON "WEBLINKS" (
