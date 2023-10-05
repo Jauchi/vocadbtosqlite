@@ -7,6 +7,16 @@ def add_names(names: list, cursor: sqlite3.Cursor):
     ''', names)
 
 
+def batch_link_songs(entries: list, cursor: sqlite3.Cursor):
+    cursor.executemany('''
+    INSERT INTO SONGS_NAMES (song_id, name_id) 
+        VALUES (
+        :song_id, 
+        (SELECT name_id FROM NAMES where language = :language AND value = :value))
+        ON CONFLICT DO NOTHING
+    ''', entries)
+
+
 def batch_link_albums(entries: list, cursor: sqlite3.Cursor):
     cursor.executemany('''
     INSERT INTO ALBUMS_NAMES (album_id, name_id) 
