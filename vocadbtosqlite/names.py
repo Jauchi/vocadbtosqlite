@@ -27,6 +27,16 @@ def batch_link_albums(entries: list, cursor: sqlite3.Cursor):
     ''', entries)
 
 
+def batch_link_artists(entries: [dict], cursor: sqlite3.Cursor):
+    cursor.executemany('''
+    INSERT INTO ARTISTS_NAMES (artist_id, name_id) 
+        VALUES (
+        :artist_id, 
+        (SELECT name_id FROM NAMES where language = :language AND value = :value))
+        ON CONFLICT DO NOTHING
+    ''', entries)
+
+
 # Links your object to a name.
 # TODO: not effective for a lot of inserts...
 def link(language: str, value: str, cursor: sqlite3.Cursor, song_id: int = None,         tag_id: int = None):
