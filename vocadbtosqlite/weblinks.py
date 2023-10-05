@@ -20,6 +20,25 @@ def add_artist_weblinks(wl_list: [dict], c: sqlite3.Cursor):
                   wl_list)
 
 
+def add_event_weblinks(wl_list: [dict], c: sqlite3.Cursor):
+    __add_wls(wl_list, c)
+    c.executemany('INSERT INTO EVENTS_WEBLINKS (event_id, link_id) VALUES (:event_id, (SELECT link_id FROM WEBLINKS '
+                  ' WHERE '
+                  'WEBLINKS.category = :category AND '
+                  'WEBLINKS.description = :description AND '
+                  'WEBLINKS.url = :url)) ON CONFLICT DO NOTHING',
+                  wl_list)
+
+
+def add_event_series_weblinks(wl_list: [dict], c: sqlite3.Cursor):
+    __add_wls(wl_list, c)
+    c.executemany('INSERT INTO EVENT_SERIES_WEBLINKS VALUES (:series_id, (SELECT link_id FROM WEBLINKS WHERE '
+                  'WEBLINKS.category = :category AND '
+                  'WEBLINKS.description = :description AND '
+                  'WEBLINKS.url = :url)) ON CONFLICT DO NOTHING',
+                  wl_list)
+
+
 # Will add weblinks
 # Additionally lets you specify song_id, tag_id, album_id as a dictionary key.
 # These will then be linked.

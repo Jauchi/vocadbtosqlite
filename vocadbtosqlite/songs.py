@@ -6,6 +6,7 @@ import vocadbtosqlite.weblinks
 import vocadbtosqlite.tags
 import vocadbtosqlite.pvs
 import vocadbtosqlite.tags
+import vocadbtosqlite.names
 
 known_keys = ['id', 'lengthSeconds', 'nicoId', 'notes', 'notesEng', 'publishDate', 'songType', 'maxMilliBpm',
               'minMilliBpm', 'webLinks']
@@ -40,6 +41,8 @@ def sync_songs(db: sqlite3.Connection, song_list):
 
     weblinks = []
     pvs = []
+    names = []
+    tags = []
 
     global known_keys
     global reported_keys
@@ -49,35 +52,43 @@ def sync_songs(db: sqlite3.Connection, song_list):
             wl['song_id'] = song_id
         weblinks += s.get('webLinks')
 
+        for name in s.get('names', []):
+            name['song_id'] = song_id
+            names += (name,)
+
         for t in s['tags']:
-            try:
-                vocadbtosqlite.tags.link(song_id=s.get('id'), tag_id=t.get('tag').get('id'), cursor=c)
-            except sqlite3.IntegrityError:
-                pass
+            t['song_id'] = song_id
+            t['tag_id'] = t['tag'].get('id')
+            tags += (t,)
+
         # Now we have all songs, extract the pvs:
         for pv in s.get('pvs', []):
             pv['song_id'] = song_id
             pvs += (pv,)
     # ReleaseEvents are: {'id': 1300, 'nameHint': '猫村いろは誕生祭 2013'}
     # OriginalVersion is: {'id': 500092, 'nameHint': 'Hello, get to you.'}
+    # TODO: ReleaseEvent
+    # TODO: OriginalVersion
     # TODO: lyrics is always empty -> why!?
     vocadbtosqlite.weblinks.link_to_weblinks(weblinks, c)
+
     vocadbtosqlite.pvs.add_pvs(pvs, c)
     vocadbtosqlite.pvs.link_songs(pvs, c)
+
+    vocadbtosqlite.names.add_names(names, c)
+    vocadbtosqlite.names.batch_link_songs(names, c)
+
+    vocadbtosqlite.tags.link_songs(tags, cursor=c)
 
     db.commit()
 
 
 def parse_song_dir(db: sqlite3.Connection, location):
-    i = 0
+    all_songs = []
+    print('scanning song dir...')
     for root, directory, files in os.walk(location):
         for f in files:
             fl = os.path.join(root, f)
-            # print('Processing: ' + str(fl))
-            t_start = datetime.datetime.now()
-            songs = vocadbtosqlite.util.parse_json(fl)
-            duration_parse = datetime.datetime.now() - t_start
-            print(str('Parsing took ' + str(duration_parse)))
-            sync_songs(db, songs)
-            duration = datetime.datetime.now() - t_start
-            print(str('Syncing to db took ' + str(duration-duration_parse)))
+            all_songs += vocadbtosqlite.util.parse_json(fl)
+    print('syncing to database...')
+    sync_songs(db, all_songs)

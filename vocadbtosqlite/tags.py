@@ -2,6 +2,7 @@ import os.path
 import sqlite3
 import json
 import vocadbtosqlite.weblinks
+import vocadbtosqlite.names
 
 
 def parse_tagfile(location):
@@ -82,7 +83,7 @@ def parse_tag_dir(db: sqlite3.Connection, location):
                 tag_names = tag.get('names', [])
                 for tn in tag_names:
                     tn['tag_id'] = tag.get('id')
-                tag_names_to_process += tag_names
+                    tag_names_to_process += (tn,)
 
                 # TODO: this could be optimized by checking if the relationship is already stored in reverse in DB
                 for rt in tag.get('relatedTags', []):
@@ -93,7 +94,8 @@ def parse_tag_dir(db: sqlite3.Connection, location):
                     tag_weblinks_to_process += (wl,)
 
     sync_tags(db, tags_to_process)
-    sync_tag_names(db, tag_names_to_process)
+    vocadbtosqlite.names.add_names(tag_names_to_process, c)
+    vocadbtosqlite.names.batch_link_tag_names(tag_names_to_process, c)
     sync_related_tags(db, related_tag_ids_to_process)
     vocadbtosqlite.weblinks.link_to_weblinks(weblink_list=tag_weblinks_to_process, cursor=c)
 
