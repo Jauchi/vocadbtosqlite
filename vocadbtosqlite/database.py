@@ -110,19 +110,6 @@ def db_init(db_location: str):
         UNIQUE("event_id","pv_id","pv_service"),
         PRIMARY KEY("event_id","pv_id","pv_service")
     );
-    CREATE TABLE IF NOT EXISTS "TAG_CATEGORIES" (
-        "id"	INTEGER NOT NULL,
-        "name"	TEXT NOT NULL UNIQUE,
-        PRIMARY KEY("id" AUTOINCREMENT)
-    );
-    CREATE TABLE IF NOT EXISTS "ALBUM_TAGS" (
-        "album_id"	INTEGER NOT NULL,
-        "tag_id"	INTEGER NOT NULL,
-        FOREIGN KEY("album_id") REFERENCES "ALBUMS"("id"),
-        UNIQUE("album_id","tag_id"),
-        FOREIGN KEY("tag_id") REFERENCES "TAGS"("id"),
-        PRIMARY KEY("tag_id","album_id")
-    );
     CREATE TABLE IF NOT EXISTS "NAMES" (
         "name_id"	INTEGER NOT NULL UNIQUE,
         "language"	INTEGER NOT NULL,
