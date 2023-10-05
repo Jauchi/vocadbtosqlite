@@ -58,13 +58,6 @@ def db_init(db_location: str):
         FOREIGN KEY("weblink_id") REFERENCES "WEBLINKS"("link_id"),
         UNIQUE("tag_id","weblink_id")
     );
-    CREATE TABLE IF NOT EXISTS "TAG_NAMES" (
-        "tag_id"	INTEGER,
-        "language"	INTEGER,
-        "value"	INTEGER,
-        PRIMARY KEY("tag_id","language","value"),
-        FOREIGN KEY("tag_id") REFERENCES "TAGS"("id")
-    );
     CREATE TABLE IF NOT EXISTS "TAGS" (
         "id"	INTEGER NOT NULL UNIQUE,
         "category"	TEXT,
