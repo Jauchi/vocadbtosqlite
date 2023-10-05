@@ -101,6 +101,15 @@ def db_init(db_location: str):
         UNIQUE("song_id","pv_id","pv_service"),
         FOREIGN KEY("pv_id","pv_service") REFERENCES "PVS"("pvId","service")
     );
+    CREATE TABLE IF NOT EXISTS "EVENTS_PVS" (
+        "event_id"	INTEGER NOT NULL,
+        "pv_id"	TEXT NOT NULL,
+        "pv_service"	TEXT NOT NULL,
+        FOREIGN KEY("event_id") REFERENCES "EVENTS"("event_id"),
+        FOREIGN KEY("pv_id","pv_service") REFERENCES "PVS"("pvId","service"),
+        UNIQUE("event_id","pv_id","pv_service"),
+        PRIMARY KEY("event_id","pv_id","pv_service")
+    );
     CREATE TABLE IF NOT EXISTS "TAG_CATEGORIES" (
         "id"	INTEGER NOT NULL,
         "name"	TEXT NOT NULL UNIQUE,
