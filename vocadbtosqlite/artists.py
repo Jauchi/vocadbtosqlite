@@ -9,13 +9,16 @@ import vocadbtosqlite.util
 # TODO: make this prettier
 def parse_artist_dir(db: sqlite3.Connection, location):
     i = 0
+    all_artists = []
+
     for root, directory, files in os.walk(location):
         for f in files:
             fl = os.path.join(root, f)
             # print('Processing: ' + str(fl))
-            artists = vocadbtosqlite.util.parse_json(fl)
-            add_artists(artists, cursor=db.cursor())
-            db.commit()
+            all_artists += vocadbtosqlite.util.parse_json(fl)
+
+    add_artists(all_artists, cursor=db.cursor())
+    db.commit()
 
 
 def link_albums_artists(entries: [dict], c: sqlite3.Cursor):
