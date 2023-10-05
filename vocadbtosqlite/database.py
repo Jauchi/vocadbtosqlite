@@ -227,6 +227,88 @@ def db_init(db_location: str):
         FOREIGN KEY("album_id") REFERENCES "ALBUMS"("id"),
         FOREIGN KEY("artist_id") REFERENCES "ARTISTS"("artist_id")
     );
+    CREATE TABLE IF NOT EXISTS "EVENTS_ARTISTS" (
+        "artist_id"	INTEGER NOT NULL,
+        "event_id"	INTEGER NOT NULL,
+        "roles"	INTEGER,
+        UNIQUE("artist_id","event_id"),
+        FOREIGN KEY("artist_id") REFERENCES "ARTISTS"("artist_id"),
+        PRIMARY KEY("event_id","artist_id"),
+        FOREIGN KEY("event_id") REFERENCES "EVENTS"("event_id")
+    );
+    CREATE TABLE IF NOT EXISTS "EVENTS_TAGS" (
+        "event_id"	INTEGER NOT NULL,
+        "tag_id"	INTEGER NOT NULL,
+        PRIMARY KEY("event_id","tag_id"),
+        FOREIGN KEY("event_id") REFERENCES "EVENTS"("event_id"),
+        FOREIGN KEY("tag_id") REFERENCES "TAGS"("id"),
+        UNIQUE("event_id","tag_id")
+    );
+    CREATE TABLE IF NOT EXISTS "EVENTS_SONGS" (
+        "event_id"	INTEGER NOT NULL,
+        "song_id"	INTEGER NOT NULL,
+        UNIQUE("event_id","song_id"),
+        FOREIGN KEY("song_id") REFERENCES "SONGS"("id"),
+        PRIMARY KEY("event_id","song_id"),
+        FOREIGN KEY("event_id") REFERENCES "EVENTS"("event_id")
+    );
+    CREATE TABLE IF NOT EXISTS "EVENTS_NAMES" (
+        "event_id"	INTEGER NOT NULL,
+        "name_id"	INTEGER NOT NULL,
+        FOREIGN KEY("event_id") REFERENCES "EVENTS"("event_id"),
+        FOREIGN KEY("name_id") REFERENCES "NAMES"("name_id"),
+        UNIQUE("event_id","name_id"),
+        PRIMARY KEY("event_id","name_id")
+    );
+    CREATE TABLE IF NOT EXISTS "EVENTS" (
+        "event_id"	INTEGER NOT NULL UNIQUE,
+        "category"	TEXT,
+        "date"	TEXT,
+        "description"	TEXT,
+        "name"	TEXT,
+        "series_id"	INTEGER,
+        "series_number"	INTEGER,
+        FOREIGN KEY("series_id") REFERENCES "EVENT_SERIES"("series_id"),
+        PRIMARY KEY("event_id")
+    );
+    CREATE TABLE IF NOT EXISTS "EVENT_SERIES" (
+        "series_id"	INTEGER NOT NULL UNIQUE,
+        "category"	TEXT,
+        "description"	TEXT,
+        PRIMARY KEY("series_id")
+    );
+    CREATE TABLE IF NOT EXISTS "EVENT_SERIES_NAMES" (
+        "series_id"	INTEGER NOT NULL,
+        "name_id"	INTEGER NOT NULL,
+        FOREIGN KEY("name_id") REFERENCES "NAMES"("name_id"),
+        FOREIGN KEY("series_id") REFERENCES "EVENT_SERIES"("series_id"),
+        UNIQUE("series_id","name_id"),
+        PRIMARY KEY("series_id","name_id")
+    );
+    CREATE TABLE IF NOT EXISTS "EVENT_SERIES_TAGS" (
+        "series_id"	INTEGER NOT NULL,
+        "tag_id"	INTEGER NOT NULL,
+        FOREIGN KEY("tag_id") REFERENCES "TAGS"("id"),
+        PRIMARY KEY("tag_id","series_id"),
+        FOREIGN KEY("series_id") REFERENCES "EVENT_SERIES"("series_id"),
+        UNIQUE("series_id","tag_id")
+    );
+    CREATE TABLE IF NOT EXISTS "EVENT_SERIES_WEBLINKS" (
+        "series_id"	INTEGER NOT NULL,
+        "weblink_id"	INTEGER NOT NULL,
+        FOREIGN KEY("series_id") REFERENCES "EVENT_SERIES"("series_id"),
+        PRIMARY KEY("series_id","weblink_id"),
+        FOREIGN KEY("weblink_id") REFERENCES "WEBLINKS"("link_id"),
+        UNIQUE("series_id","weblink_id")
+    );
+    CREATE TABLE IF NOT EXISTS "EVENTS_WEBLINKS" (
+        "event_id"	INTEGER NOT NULL,
+        "link_id"	INTEGER NOT NULL,
+        FOREIGN KEY("link_id") REFERENCES "WEBLINKS"("link_id"),
+        FOREIGN KEY("event_id") REFERENCES "EVENTS"("event_id"),
+        PRIMARY KEY("event_id","link_id"),
+        UNIQUE("event_id","link_id")
+    );
     CREATE INDEX IF NOT EXISTS "WEBLINK_IDX" ON "WEBLINKS" (
         "category",
         "description",
