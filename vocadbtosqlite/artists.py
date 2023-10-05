@@ -1,6 +1,8 @@
 import datetime
 import sqlite3
+import vocadbtosqlite.names
 import vocadbtosqlite.weblinks
+import vocadbtosqlite.tags
 import sqlite3
 import os
 import vocadbtosqlite.util
@@ -46,13 +48,29 @@ def add_artists(artist_lst: list, cursor: sqlite3.Cursor):
     base_voicebanks = []
     artist_members = []
     weblinks = []
+    names = []
+    tags = []
 
     for a in artist_lst:
         a_id = a.get('id')
+        a_names = a.get('names')
+        a_tags = a.get('tags')
         # Extract baseVoicebank
         if a.get('baseVoicebank') is not None:
             bvb = a.get("baseVoicebank")
             base_voicebanks += [(bvb['id'], a_id,)]
+
+        if a_names:
+            for n in a_names:
+                n['artist_id'] = a_id
+                names += (n,)
+
+        if a_tags:
+            for t in a_tags:
+                t['artist_id'] = a_id
+                t['tag_id'] = t['tag'].get('id')
+                tags += (t,)
+
         # membership information
         if a.get('members'):
             for child in a.get('members'):
@@ -65,6 +83,11 @@ def add_artists(artist_lst: list, cursor: sqlite3.Cursor):
                 wl['artist_id'] = a_id
                 weblinks += (wl,)
     vocadbtosqlite.weblinks.add_artist_weblinks(weblinks, cursor)
+
+    vocadbtosqlite.names.add_names(names, cursor)
+    vocadbtosqlite.names.batch_link_artists(names, cursor)
+
+    vocadbtosqlite.tags.link_artists(tags, cursor)
 
     for member_pair in artist_members:
         try:
