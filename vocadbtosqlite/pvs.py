@@ -17,6 +17,13 @@ def link_songs(entries: [dict], cursor: sqlite3.Cursor):
     ''', entries)
 
 
+def link_events(entries: [dict], cursor: sqlite3.Cursor):
+    cursor.executemany('''
+        INSERT INTO EVENTS_PVS (event_id, pv_id, pv_service) VALUES (:event_id, :pvId, :service) 
+        ON CONFLICT DO NOTHING
+    ''', entries)
+
+
 def add_pvs(pvs: [dict], cursor: sqlite3.Cursor):
     for i in pvs:
         if i.get('extendedMetadata', False):
