@@ -1,4 +1,5 @@
 # VocaDBToSqlite
+# !!! STILL HAS GLARING ISSUES!!!
 ## What does this do?
 Uses a dump obtained from VocaDB and turns it into an sqlite database. Dumps can be downloaded using the provided `download_dump.sh` script.
 ## Goals
