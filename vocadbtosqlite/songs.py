@@ -13,6 +13,16 @@ known_keys = ['id', 'lengthSeconds', 'nicoId', 'notes', 'notesEng', 'publishDate
 reported_keys = known_keys
 
 
+def link_events(song_list, cursor: sqlite3.Cursor):
+    for a in song_list:
+        try:
+            cursor.execute('''
+                INSERT INTO EVENTS_SONGS (event_id, song_id) VALUES (:event_id, :id) ON CONFLICT DO NOTHING
+            ''', a)
+        except sqlite3.IntegrityError:
+            pass
+
+
 def sync_songs(db: sqlite3.Connection, song_list):
     # TODO: convert timestamp to actual timestamp instead of str (saves DB storage)
     # TODO: move song types to it's own table (saves DB storage)

@@ -47,6 +47,26 @@ def batch_link_tag_names(entries: [dict], cursor: sqlite3.Cursor):
     ''', entries)
 
 
+def batch_link_event_series(entries: [dict], cursor: sqlite3.Cursor):
+    cursor.executemany('''
+    INSERT INTO EVENT_SERIES_NAMES (series_id, name_id) 
+        VALUES (
+        :series_id, 
+        (SELECT name_id FROM NAMES where language = :language AND value = :value))
+        ON CONFLICT DO NOTHING
+    ''', entries)
+
+
+def batch_link_events(entries: [dict], cursor: sqlite3.Cursor):
+    cursor.executemany('''
+    INSERT INTO EVENTS_NAMES (event_id, name_id) 
+        VALUES (
+        :event_id, 
+        (SELECT name_id FROM NAMES where language = :language AND value = :value))
+        ON CONFLICT DO NOTHING
+    ''', entries)
+
+
 # Links your object to a name.
 # TODO: not effective for a lot of inserts...
 def link(language: str, value: str, cursor: sqlite3.Cursor, song_id: int = None, tag_id: int = None):
